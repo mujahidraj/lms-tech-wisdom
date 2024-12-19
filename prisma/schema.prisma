@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model student {
+  id           Int      @unique @default(autoincrement())
+  first_name   String
+  last_name    String
+  email        String
+  phone_number String
+  username     String   @unique
+  hash         String
+  address      String
+  createdAt    DateTime @default(now())
+  updateAt     DateTime @updatedAt
+
+  enrollment_status String?
+  enrollment        enrollment[]
+  transaction       transaction[]
+  review            review[]
+}
+
+model course {
+  id          Int           @unique @default(autoincrement())
+  title       String
+  description String?
+  price       String
+  time        DateTime      @default(now())
+  enrollment  enrollment[]
+  transaction transaction[]
+  review      review[]
+}
+
+model enrollment {
+  id         Int      @unique @default(autoincrement())
+  student_id Int
+  course_id  Int
+  time       DateTime @default(now())
+  status     String
+  student    student  @relation(fields: [student_id], references: [id])
+  course     course   @relation(fields: [course_id], references: [id])
+}
+
+model transaction {
+  id           Int      @unique @default(autoincrement())
+  student_id   Int
+  course_id    Int
+  amount       Float
+  payment_date DateTime @default(now())
+  status       String
+  student      student  @relation(fields: [student_id], references: [id])
+  course       course   @relation(fields: [course_id], references: [id])
+}
+
+model review {
+  id         Int      @unique @default(autoincrement())
+  student_id Int
+  course_id  Int
+  rating     Int
+  comment    String
+  time       DateTime @default(now())
+  student    student  @relation(fields: [student_id], references: [id])
+  course     course   @relation(fields: [course_id], references: [id])
+}
