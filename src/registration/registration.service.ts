@@ -3,10 +3,12 @@ import { DatabaseService } from 'src/database/database.service';
 import * as argon from 'argon2';
 import { registrationDto } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RegistrationService {
-    constructor(private database: DatabaseService) { }
+    constructor(private database: DatabaseService ,private jwt:JwtService ,private config: ConfigService) { }
     async signUp(dto: registrationDto) {
 
         const hash = await argon.hash(dto.password);
@@ -25,8 +27,8 @@ export class RegistrationService {
 
                 },
             });
-            delete student.hash;
-            return student;
+            
+           return this.signupToken(student.id,student.email,student.username,student.phone_number,student.address,student.enrollment_status)
         }
         catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
@@ -37,6 +39,39 @@ export class RegistrationService {
                 }
             }
             throw error;
+        }
+        
+    }
+
+  async signupToken(
+        student_id : number,
+        email :string,
+        username : string,
+        phone_number :string,
+        address : string,
+        enrollment_status : string
+    ) : Promise<{access_token : string}>
+    {
+        const payload = {
+            id : student_id,
+            username :username,
+            email: email ,
+            phone_number:phone_number,
+            address:address,
+            enrollment_status:enrollment_status
+        }
+
+        const secret = this.config.get('JWT_SECRET')
+
+       const token = await this.jwt.signAsync(payload, {
+                expiresIn : '15m',
+                secret : secret
+        }
+
+        );
+
+        return {
+            access_token : token
         }
     }
 }
