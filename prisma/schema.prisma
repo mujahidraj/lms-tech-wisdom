@@ -32,11 +32,12 @@ model student {
 }
 
 model course {
-  id          Int           @unique @default(autoincrement())
+  id          Int      @unique @default(autoincrement())
   title       String
   description String?
   price       String
-  time        DateTime      @default(now())
+  time        DateTime @default(now())
+
   enrollment  enrollment[]
   transaction transaction[]
   review      review[]

@@ -1,5 +1,5 @@
 import { Param } from "@nestjs/common"
-import { IsEmail, IsLocale, IsMobilePhone, IsNotEmpty, IsNumber, IsOptional, IsPassportNumber, IsPhoneNumber, isString, IsString } from "class-validator"
+import { IsEmail, IsInt, IsLocale, IsMobilePhone, IsNotEmpty, IsNumber, IsOptional, IsPassportNumber, IsPhoneNumber, isString, IsString, IsStrongPassword, Matches } from "class-validator"
 
 export class registrationDto {
 
@@ -16,16 +16,17 @@ export class registrationDto {
     @IsEmail()
     email     : string
 
+   
+    @IsString()
     @IsNotEmpty()
-    @IsNumber()
-    phone_number : number
+    phone_number : string
     
     @IsNotEmpty()
     @IsString()
     username  : string
     
     @IsNotEmpty()
-    @IsNumber() 
+    @IsStrongPassword() 
     password     : string
 
     @IsNotEmpty()
