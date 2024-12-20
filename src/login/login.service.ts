@@ -6,10 +6,20 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
+
+import * as nodemailer from 'nodemailer';
+import * as crypto from 'crypto';
+
 @Injectable()
 export class LoginService {
     constructor(private databse : DatabaseService ,private config:ConfigService ,private jwt:JwtService){}
     private resetTokens: Map<string, string> = new Map();
+    private otpStorage = new Map<string, { otp: string; expiry: number }>();
+
+
+        //...........................LOGIN.............................................
+
+
     async login(dto:loginDto){
         const student=await this.databse.student.findUnique({
             where : {
@@ -37,6 +47,11 @@ export class LoginService {
        
         return this.signupToken(student.id,student.email,student.username,student.phone_number,student.address,student.enrollment_status)
     }
+
+
+    //.................................ACCESS TOKEN......................................
+
+
 
     async signupToken(
         student_id : number,
@@ -69,6 +84,11 @@ export class LoginService {
             access_token : token
         }
     }
+
+
+    //.......................................FORGOT PASSWORD.....................................
+
+
     async requestPasswordReset(username: string): Promise<string> {
         const user = await this.databse.student.findFirst({
             where: { username },
@@ -83,7 +103,11 @@ export class LoginService {
         return token;
       }
     
-      // Reset Password
+      
+
+      //..................................RESET PASSSWORD..........................
+
+    
       async resetPassword(token: string, newPassword: string): Promise<string> {
         const username = this.resetTokens.get(token);
         if (!username) {
@@ -103,4 +127,57 @@ export class LoginService {
         this.resetTokens.delete(token);
         return 'Password updated successfully';
       }
+
+
+
+
+    //.....................one time password ...................................................
+
+
+
+
+       // Generate OTP
+  generateOtp(): string {
+    return crypto.randomInt(100000, 999999).toString();
+  }
+
+
+   // Send OTP via Email
+   async sendOtpEmail(email: string): Promise<void> {
+    const otp = this.generateOtp();
+    const expiry = Date.now() + 10 * 60 * 1000; // OTP expires in 5 minutes
+    this.otpStorage.set(email, { otp, expiry });
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'mujahidraj2000@gmail.com',
+        pass: 'ixyp ufom gqsc nxmy',
+      },
+      debug: true, // Enable debug output
+    logger: true, // Log additional details to the console
+    });
+
+    await transporter.sendMail({
+      from: 'mujahidraj2000@gmail.com',
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is: ${otp}. It will expire in 10 minutes.`,
+    });
+  }
+
+  // Verify OTP
+  verifyOtp(email: string, otp: string): boolean {
+    const record = this.otpStorage.get(email);
+    if (!record) {
+      return false;
+    }
+
+    const isValid = record.otp === otp && Date.now() < record.expiry;
+    if (isValid) {
+      this.otpStorage.delete(email); // Clear OTP after successful verification
+    }
+
+    return isValid;
+  }
 }
