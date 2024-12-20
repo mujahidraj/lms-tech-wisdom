@@ -14,7 +14,6 @@ export class StudentController {
     
     @Get('me')
     getme(@Getstudent()user : student ) {
-
         return user;
     }
 

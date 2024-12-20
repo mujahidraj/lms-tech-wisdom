@@ -11,4 +11,18 @@ export class LoginController {
          return this.loginService.login(dto)
     }
 
+    @Post('forgot-password')
+    async forgotPassword(@Body('username') username: string): Promise<string> {
+      const token = await this.loginService.requestPasswordReset(username);
+      return `Reset token: ${token}`;
+    }
+  
+    @Post('reset-password')
+    async resetPassword(
+      @Body('token') token: string,
+      @Body('newPassword') newPassword: string,
+    ): Promise<string> {
+      return this.loginService.resetPassword(token, newPassword);
+    }
+
 }

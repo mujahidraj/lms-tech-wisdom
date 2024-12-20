@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }) {
         const user = await this.database.student.findUnique({
             where : {
-                id :  payload.sub,
+                
                 username :payload.username,
             },
         });

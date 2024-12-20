@@ -4,10 +4,12 @@ import { loginDto } from './dto';
 import * as argon from 'argon2';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class LoginService {
     constructor(private databse : DatabaseService ,private config:ConfigService ,private jwt:JwtService){}
+    private resetTokens: Map<string, string> = new Map();
     async login(dto:loginDto){
         const student=await this.databse.student.findUnique({
             where : {
@@ -67,4 +69,38 @@ export class LoginService {
             access_token : token
         }
     }
+    async requestPasswordReset(username: string): Promise<string> {
+        const user = await this.databse.student.findFirst({
+            where: { username },
+        });
+        if (!user) {
+          throw new Error('User not found');
+        }
+    
+        const token = uuidv4();
+        this.resetTokens.set(token, username);
+    
+        return token;
+      }
+    
+      // Reset Password
+      async resetPassword(token: string, newPassword: string): Promise<string> {
+        const username = this.resetTokens.get(token);
+        if (!username) {
+            
+            console.log('Reset password with token:', token);
+            
+         // throw new Error('Invalid or expired token');
+        }
+    
+        const hashedPassword = await argon.hash(newPassword);
+    
+        await this.databse.student.update({
+          where: { username },
+          data: { hash: hashedPassword },
+        });
+    
+        this.resetTokens.delete(token);
+        return 'Password updated successfully';
+      }
 }
