@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { loginDto } from './dto';
 import * as argon from 'argon2';
@@ -15,6 +15,8 @@ export class LoginService {
     constructor(private databse : DatabaseService ,private config:ConfigService ,private jwt:JwtService){}
     private resetTokens: Map<string, string> = new Map();
     private otpStorage = new Map<string, { otp: string; expiry: number }>();
+    private userPasswords: Map<string, string> = new Map(); // Declare and initialize userPasswords
+
 
 
         //...........................LOGIN.............................................
@@ -108,44 +110,49 @@ export class LoginService {
       //..................................RESET PASSSWORD..........................
 
     
-      async resetPassword(token: string, newPassword: string): Promise<string> {
-        const username = this.resetTokens.get(token);
-        if (!username) {
-            
-            console.log('Reset password with token:', token);
-            
-         // throw new Error('Invalid or expired token');
+      async resetPassword(email: string, newPassword: string): Promise<string> {
+
+        if (!newPassword) {
+          throw new Error('New password must be provided');
         }
-    
         const hashedPassword = await argon.hash(newPassword);
-    
+      
+        // Ensure the email exists in the database
+        const student = await this.databse.student.findFirstOrThrow({
+          where: { 
+            email:email
+
+
+           },
+        });
+      
+        if (!student) {
+          throw new Error('Student with the provided email does not exist.');
+        }
+      
+        // Update the password
         await this.databse.student.update({
-          where: { username },
+          where: { id: student.id }, // Use a unique field
           data: { hash: hashedPassword },
         });
-    
-        this.resetTokens.delete(token);
-        return 'Password updated successfully';
+      
+        return 'Password reset successfully.';
       }
-
-
-
 
     //.....................one time password ...................................................
 
 
 
 
-       // Generate OTP
+     // Generate OTP
   generateOtp(): string {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-
-   // Send OTP via Email
-   async sendOtpEmail(email: string): Promise<void> {
+  // Send OTP via Email
+  async sendOtpEmail(email: string): Promise<void> {
     const otp = this.generateOtp();
-    const expiry = Date.now() + 10 * 60 * 1000; // OTP expires in 5 minutes
+    const expiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
     this.otpStorage.set(email, { otp, expiry });
 
     const transporter = nodemailer.createTransport({
@@ -154,8 +161,6 @@ export class LoginService {
         user: 'mujahidraj2000@gmail.com',
         pass: 'ixyp ufom gqsc nxmy',
       },
-      debug: true, // Enable debug output
-    logger: true, // Log additional details to the console
     });
 
     await transporter.sendMail({
@@ -179,5 +184,18 @@ export class LoginService {
     }
 
     return isValid;
+  }
+
+  // Update Password
+  async updatePassword(email: string, newPassword: string): Promise<void> {
+    if (!this.userPasswords.has(email)) {
+      throw new BadRequestException('User not found');
+    }
+    this.userPasswords.set(email, newPassword);
+  }
+
+  // Mock user setup (for testing)
+  createUser(email: string, password: string): void {
+    this.userPasswords.set(email, password);
   }
 }

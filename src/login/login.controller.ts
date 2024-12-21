@@ -19,7 +19,7 @@ export class LoginController {
     }
   
     @Post('reset-password')
-    async resetPassword(
+    async resetPassword1(
       @Body('token') token: string,
       @Body('newPassword') newPassword: string,
     ): Promise<string> {
@@ -37,28 +37,47 @@ export class LoginController {
 
 
 
-  @Post('send')
-  async sendOtp(@Body('email') email: string) {
-    if (!email) {
-      throw new BadRequestException('Email is required');
+    @Post('send')
+    async sendOtp(@Body('email') email: string) {
+      if (!email) {
+        throw new BadRequestException('Email is required');
+      }
+  
+      await this.loginService.sendOtpEmail(email);
+      return { message: 'OTP sent successfully' };
     }
-
-    await this.loginService.sendOtpEmail(email);
-    return { message: 'OTP sent successfully' };
-  }
-
-  @Post('verify')
-  verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
-    if (!email || !otp) {
-      throw new BadRequestException('Email and OTP are required');
+  
+    @Post('verify')
+    verifyOtp(@Body('email') email: string, @Body('otp') otp: string) {
+      if (!email || !otp) {
+        throw new BadRequestException('Email and OTP are required');
+      }
+  
+      const isValid = this.loginService.verifyOtp(email, otp);
+      if (!isValid) {
+        throw new BadRequestException('Invalid or expired OTP');
+      }
+  
+      return { message: 'OTP verified successfully' };
     }
-
-    const isValid = this.loginService.verifyOtp(email, otp);
-    if (!isValid) {
-      throw new BadRequestException('Invalid or expired OTP');
+  
+    @Post('reset-password')
+    async resetPassword(
+      @Body('email') email: string,
+      @Body('otp') otp: string,
+      @Body('newPassword') newPassword: string,
+    ) {
+      if (!email || !otp || !newPassword) {
+        throw new BadRequestException('Email, OTP, and new password are required');
+      }
+  
+      const isValid = this.loginService.verifyOtp(email, otp);
+      if (!isValid) {
+        throw new BadRequestException('Invalid or expired OTP');
+      }
+  
+      await this.loginService.updatePassword(email, newPassword);
+      return { message: 'Password reset successfully' };
     }
-
-    return { message: 'OTP verified successfully' };
-  }
 
 }

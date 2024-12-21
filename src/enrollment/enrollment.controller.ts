@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { EnrollmentService } from './enrollment.service';
 import { createDto, editDto } from './dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('enrollment')
+@UseGuards(AuthGuard('jwt')) // Ensure only authenticated users can access
+
 export class EnrollmentController {
     constructor(private readonly enrollmentService: EnrollmentService) {}
     
