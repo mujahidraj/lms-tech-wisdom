@@ -4,7 +4,7 @@ export class editDto{
   
 
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     title     :  string
 
    
@@ -12,7 +12,7 @@ export class editDto{
     @IsOptional()
     description : string
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     price   :   string
 
