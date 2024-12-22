@@ -3,21 +3,28 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 export class editDto{
   
 
-       @IsOptional()
-        @IsNumber()
-        student_id :number
-    
         @IsOptional()
-        @IsNumber()
-        course_id  :number
+        
+        reply_by: number
+        
 
         @IsOptional()
-        
-        rating : number
-        
+        comment_by : number
+    
+        @IsOptional()
+    
+        course_id: number
+    
+        @IsOptional()
+        rating: number
+    
         @IsOptional()
         @IsString()
-        comment    :string
+        comment: string
+    
+        @IsOptional()
+        @IsString()
+        reply : string
 
   
 }

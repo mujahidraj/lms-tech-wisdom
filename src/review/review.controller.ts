@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { createDto, editDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+
 
 @Controller('review')
 @UseGuards(AuthGuard('jwt')) // Ensure only authenticated users can access
@@ -9,8 +11,9 @@ import { AuthGuard } from '@nestjs/passport';
 export class ReviewController {
     constructor(private review: ReviewService){}
               @Post('insert')
-              create(@Body()dto:createDto ) {
-                return this.review.createreview(dto);
+              create(@Body()dto:createDto ,@Req() req: Request ) {
+                const userId = req.user['id'];
+                return this.review.createreview(dto,userId);
               }
             
               @Get('all-review')
@@ -32,5 +35,20 @@ export class ReviewController {
               @Delete(':id')
               remove(@Param('id') id: string) {
                 return this.review.deletereview(+id);
+              }
+
+
+
+
+              //..................add comment...............
+
+              @Post('comment')
+              async addComment(
+                @Body('course_id') course_id: number,
+                @Body('reply') reply: string,
+                @Req() req: Request,
+              ) {
+                const userId = req.user['id']; // Extract user ID from JWT token
+                return this.review.addComment(userId, course_id, reply);
               }
 }

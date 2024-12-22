@@ -10,15 +10,17 @@ export class ReviewService {
                 //.............create review.......................
             
             
-                async createreview(dto: createDto) {
+                async createreview(dto: createDto ,commented_by:number) {
             
             
                     const review = await this.databaseService.review.create({
                         data: {
-                            student_id :dto.student_id,
+                            //reply_by :dto.reply_by,
+                            comment_by : commented_by,
                             course_id:dto.course_id,
                             rating : dto.rating,
-                            comment :dto.comment
+                            comment :dto.comment,
+                           // reply :dto.reply
             
                         },
                     });
@@ -57,10 +59,12 @@ export class ReviewService {
                             id : userId, 
                         },
                         data: {
-                            student_id :dto.student_id,
+                            reply_by :dto.reply_by,
+                            comment_by : dto.comment_by,
                             course_id:dto.course_id,
                             rating : dto.rating,
-                            comment :dto.comment
+                            comment :dto.comment,
+                            reply :dto.reply
             
                         },
                     });
@@ -85,5 +89,33 @@ export class ReviewService {
                          
                         });
                        
+                  }
+
+
+
+
+                  //................. addingf comment............
+
+                  async addComment(reply_by: number, course_id: number, reply: string) {
+                    // Validate course existence
+                    const course = await this.databaseService.course.findMany({ where: { id: course_id } });
+                    if (!course) {
+                      throw new Error('Course not found');
+                    }
+                
+                    // Create and return the comment    
+                    return this.databaseService.review.update({
+                        where :
+                        {
+                            course_id:course_id
+                        },
+                      data: {
+                        reply_by,
+                        course_id,
+                        reply,
+                        
+                        
+                      },
+                    });
                   }
 }

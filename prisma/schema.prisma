@@ -66,11 +66,14 @@ model transaction {
 
 model review {
   id         Int      @unique @default(autoincrement())
-  student_id Int
-  course_id  Int
+  course_id  Int    @unique
+  reply_by   Int?
+  comment_by Int
   rating     Int
   comment    String
+  reply      String?
   time       DateTime @default(now())
-  student    student  @relation(fields: [student_id], references: [id])
+  student    student?  @relation(fields: [reply_by], references: [id])
   course     course   @relation(fields: [course_id], references: [id])
+
 }

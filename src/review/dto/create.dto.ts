@@ -2,9 +2,12 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 
 export class createDto {
 
-    @IsNotEmpty()
+    @IsString()
+    @IsOptional()
+    reply_by: number
 
-    student_id: number
+    @IsOptional()
+    comment_by : number
 
     @IsNotEmpty()
 
@@ -16,6 +19,10 @@ export class createDto {
     @IsNotEmpty()
     @IsString()
     comment: string
+
+    @IsOptional()
+    @IsString()
+    reply : string
 
 
 }
