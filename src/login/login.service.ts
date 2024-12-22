@@ -132,8 +132,13 @@ export class LoginService {
       
         // Update the password
         await this.databse.student.update({
-          where: { id: student.id }, // Use a unique field
-          data: { hash: hashedPassword },
+          where: {
+             email: student.email 
+          }, // Use a unique field
+          data: { 
+            
+            hash: hashedPassword 
+          },
         });
       
         return 'Password reset successfully.';

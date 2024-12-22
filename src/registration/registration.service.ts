@@ -28,7 +28,7 @@ export class RegistrationService {
                 },
             });
             
-           return this.signupToken(student.id,student.email,student.username,student.phone_number,student.address,student.enrollment_status)
+           return 'Registration Complete'
         }
         catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {

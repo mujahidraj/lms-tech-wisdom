@@ -12,11 +12,12 @@ import { StudentModule } from './student/student.module';
 import { CourseModule } from './course/course.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal:true,
-  }), RegistrationModule, DatabaseModule, LoginModule, StudentModule, CourseModule, EnrollmentModule, TransactionModule, ],
+  }), RegistrationModule, DatabaseModule, LoginModule, StudentModule, CourseModule, EnrollmentModule, TransactionModule, ReviewModule ],
   controllers: [AppController],
   providers: [AppService],
 })
