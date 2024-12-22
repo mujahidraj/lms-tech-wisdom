@@ -25,7 +25,7 @@ model student {
   createdAt    DateTime @default(now())
   updateAt     DateTime @updatedAt
 
-  enrollment_status String?
+  enrollment_status Boolean @default(false)
   enrollment        enrollment[]
   transaction       transaction[]
   review            review[]
@@ -48,7 +48,7 @@ model enrollment {
   student_id Int
   course_id  Int
   time       DateTime @default(now())
-  status     String
+  status     Boolean? @default(false)
   student    student  @relation(fields: [student_id], references: [id])
   course     course   @relation(fields: [course_id], references: [id])
 }

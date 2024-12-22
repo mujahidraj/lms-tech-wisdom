@@ -1,5 +1,5 @@
 import { Param } from "@nestjs/common"
-import { IsEmail, IsInt, IsLocale, IsMobilePhone, IsNotEmpty, IsNumber, IsOptional, IsPassportNumber, IsPhoneNumber, isString, IsString, IsStrongPassword, Matches } from "class-validator"
+import { IsBoolean, IsEmail, IsInt, IsLocale, IsMobilePhone, IsNotEmpty, IsNumber, IsOptional, IsPassportNumber, IsPhoneNumber, isString, IsString, IsStrongPassword, Matches } from "class-validator"
 
 export class registrationDto {
 
@@ -34,6 +34,6 @@ export class registrationDto {
     address : string
    
     @IsOptional()
-    @IsString()
-    enrollment_status : string
+    @IsBoolean()
+    enrollment_status : boolean
 }

@@ -10,12 +10,12 @@ export class TransactionService {
             //.............create transaction.......................
         
         
-            async createTransaction(dto: createDto) {
+            async createTransaction(dto: createDto,student_id:number) {
         
         
                 const transaction = await this.databaseService.transaction.create({
                     data: {
-                        student_id :dto.student_id,
+                        student_id :student_id,
                         course_id:dto.course_id,
                         amount : dto.amount,
                         status :dto.status
@@ -49,7 +49,7 @@ export class TransactionService {
         
               //....................update transaction by id.............................
         
-              async editTransaction(userId : number ,dto: editDto) {
+              async editTransaction(userId : number ,dto: editDto,student_id:number) {
         
         
                 const transaction = await this.databaseService.transaction.update({
@@ -57,7 +57,7 @@ export class TransactionService {
                         id : userId, 
                     },
                     data: {
-                        student_id :dto.student_id,
+                        student_id :student_id,
                         course_id:dto.course_id,
                         amount : dto.amount,
                         status :dto.status

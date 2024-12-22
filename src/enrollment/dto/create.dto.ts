@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 
 export class createDto{
   
-    @IsNotEmpty()
+    
     
     student_id :number
 
@@ -10,8 +10,8 @@ export class createDto{
     
     course_id  :number
     
-    @IsNotEmpty()
-    @IsString()
+    @IsBoolean()
+    @IsOptional()
     status     :string
 
   

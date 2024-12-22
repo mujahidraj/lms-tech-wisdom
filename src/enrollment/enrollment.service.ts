@@ -10,14 +10,15 @@ export class EnrollmentService {
     //.............create Enrollment .......................
 
 
-    async createEnrollment(dto: createDto) {
+    async createEnrollment(dto: createDto,enrollment_status:boolean,student_id:number) {
 
 
         const enrollment = await this.databaseService.enrollment.create({
             data: {
-                student_id: dto.student_id,
+                student_id: student_id,
                 course_id: dto.course_id,
-                status: dto.status
+                status: enrollment_status,
+                
 
             },
         });
@@ -48,7 +49,7 @@ export class EnrollmentService {
 
     //....................update enrollment by id.............................
 
-    async editEnrollment(userId: number, dto: editDto) {
+    async editEnrollment(userId: number, dto: editDto,enrollment_status:boolean) {
 
 
         const enrollment = await this.databaseService.enrollment.update({
@@ -58,7 +59,7 @@ export class EnrollmentService {
             data: {
                 student_id: dto.student_id,
                 course_id: dto.course_id,
-                status: dto.status
+                status: enrollment_status
 
             },
         });

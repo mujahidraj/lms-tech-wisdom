@@ -61,7 +61,7 @@ export class LoginService {
         username : string,
         phone_number :string,
         address : string,
-        enrollment_status : string
+        enrollment_status : boolean
     ) : Promise<{access_token : string}>
     {
         const payload = {
