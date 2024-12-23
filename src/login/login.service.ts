@@ -118,7 +118,7 @@ export class LoginService {
         const hashedPassword = await argon.hash(newPassword);
       
         // Ensure the email exists in the database
-        const student = await this.databse.student.findFirstOrThrow({
+        const student = await this.databse.student.findFirst({
           where: { 
             email:email
 
@@ -154,7 +154,7 @@ export class LoginService {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-  // Send OTP via Email
+  
   async sendOtpEmail(email: string): Promise<void> {
     const otp = this.generateOtp();
     const expiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
@@ -176,7 +176,7 @@ export class LoginService {
     });
   }
 
-  // Verify OTP
+  
   verifyOtp(email: string, otp: string): boolean {
     const record = this.otpStorage.get(email);
     if (!record) {
@@ -191,7 +191,7 @@ export class LoginService {
     return isValid;
   }
 
-  // Update Password
+  
   async updatePassword(email: string, newPassword: string): Promise<void> {
     if (!this.userPasswords.has(email)) {
       throw new BadRequestException('User not found');
@@ -199,7 +199,7 @@ export class LoginService {
     this.userPasswords.set(email, newPassword);
   }
 
-  // Mock user setup (for testing)
+
   createUser(email: string, password: string): void {
     this.userPasswords.set(email, password);
   }
