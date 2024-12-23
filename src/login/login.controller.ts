@@ -27,14 +27,7 @@ export class LoginController {
     }
 
 
-
-
-
-
-
-
-    //One time password
-
+    
 
 
     @Post('send')

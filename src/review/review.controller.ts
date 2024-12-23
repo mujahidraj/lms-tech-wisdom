@@ -6,7 +6,7 @@ import { Request } from 'express';
 
 
 @Controller('review')
-@UseGuards(AuthGuard('jwt')) // Ensure only authenticated users can access
+@UseGuards(AuthGuard('jwt')) 
 
 export class ReviewController {
     constructor(private review: ReviewService){}

@@ -5,7 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
 @Controller('enrollment')
-@UseGuards(AuthGuard('jwt')) // Ensure only authenticated users can access
+@UseGuards(AuthGuard('jwt'))
 
 export class EnrollmentController {
     constructor(private readonly enrollmentService: EnrollmentService) {}

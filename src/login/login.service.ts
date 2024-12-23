@@ -15,7 +15,7 @@ export class LoginService {
     constructor(private databse : DatabaseService ,private config:ConfigService ,private jwt:JwtService){}
     private resetTokens: Map<string, string> = new Map();
     private otpStorage = new Map<string, { otp: string; expiry: number }>();
-    private userPasswords: Map<string, string> = new Map(); // Declare and initialize userPasswords
+    private userPasswords: Map<string, string> = new Map(); 
 
 
 
@@ -117,7 +117,6 @@ export class LoginService {
         }
         const hashedPassword = await argon.hash(newPassword);
       
-        // Ensure the email exists in the database
         const student = await this.databse.student.findFirst({
           where: { 
             email:email
@@ -130,11 +129,10 @@ export class LoginService {
           throw new Error('Student with the provided email does not exist.');
         }
       
-        // Update the password
         await this.databse.student.update({
           where: {
              email: student.email 
-          }, // Use a unique field
+          }, 
           data: { 
             
             hash: hashedPassword 
@@ -149,7 +147,6 @@ export class LoginService {
 
 
 
-     // Generate OTP
   generateOtp(): string {
     return crypto.randomInt(100000, 999999).toString();
   }
@@ -157,7 +154,7 @@ export class LoginService {
   
   async sendOtpEmail(email: string): Promise<void> {
     const otp = this.generateOtp();
-    const expiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+    const expiry = Date.now() + 10 * 60 * 1000; 
     this.otpStorage.set(email, { otp, expiry });
 
     const transporter = nodemailer.createTransport({
@@ -185,7 +182,7 @@ export class LoginService {
 
     const isValid = record.otp === otp && Date.now() < record.expiry;
     if (isValid) {
-      this.otpStorage.delete(email); // Clear OTP after successful verification
+      this.otpStorage.delete(email); 
     }
 
     return isValid;
